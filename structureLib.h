@@ -7,7 +7,7 @@ typedef struct contacto {
     int id;
     tString nombre;
     tString apellido;
-    int numero;
+    tString numero;
     tString nota;
     struct contacto *siguiente;
 } tContacto;

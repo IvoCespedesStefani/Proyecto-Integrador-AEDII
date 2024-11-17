@@ -13,7 +13,7 @@ void grabarLista(tContacto*);
 tContacto *cargarLista();
 int getUltimaId();
 tContacto getContactoId(int);
-tContacto getContactoNum(int);
+tContacto getContactoNum(tString);
 void mostrarContactos();
 
 FILE *abrirArchivoLectura() {
@@ -71,13 +71,11 @@ void grabarLista(tContacto *lista) {
 
     tContacto *actual = lista;
     while (actual != NULL) {
-        tContacto temp = *actual; 
-        temp.siguiente = NULL;   
-        fwrite(&temp, sizeof(tContacto), 1, archivo);
-        actual = actual->siguiente;
+        fwrite(actual, sizeof(tContacto), 1, archivo); 
+        actual = actual->siguiente;                   
     }
 
-    cerrarArchivo(archivo);
+    fclose(archivo); 
     printf("Contactos guardados exitosamente.\n");
 }
 
@@ -132,7 +130,7 @@ void mostrarContactos() {
         printf("ID: %d\n", contacto.id);
         printf("Nombre: %s\n", contacto.nombre);
         printf("Apellido: %s\n", contacto.apellido);
-        printf("Numero: %d\n", contacto.numero);
+        printf("Numero: %s\n", contacto.numero);
         printf("------------------------------------\n");
         encontrado = 1;
     }
@@ -148,23 +146,16 @@ void mostrarContactos() {
 int getUltimaId() {
     FILE *archivo = abrirArchivoLectura();
 
-    if (archivo == NULL) {
-        printf("No se pudo abrir el archivo. Asignando ID inicial.\n");
-        return 0; 
-    }
-
     tContacto contacto;
-    int ultimaId = 0;  
+    int ultimaId;
 
     while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
         ultimaId = contacto.id;  
     }
 
-    cerrarArchivo(archivo); 
+    fclose(archivo); 
     return ultimaId;  
 }
-
-
 
 tContacto getContactoId(int id){
     tContacto contacto;
@@ -182,20 +173,20 @@ tContacto getContactoId(int id){
     return contacto;
 }
 
-tContacto getContactoNum(int numero){
+tContacto getContactoNum(tString numero){
 	
 	tContacto contacto;
 	FILE *archivo = abrirArchivoLectura();
 	
 	while(fread(&contacto, sizeof(tContacto), 1, archivo ) == 1) {
-		if (contacto.numero == numero){
+		if (strcmp(contacto.numero, numero) == 0){
 			cerrarArchivo(archivo);
 			return contacto;
 		}
 	}
 	
 	cerrarArchivo(archivo);
-    contacto.numero = -1; 
+    strcpy(contacto.numero, "No se encontro el contacto");
     return contacto;
 }
 

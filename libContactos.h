@@ -8,15 +8,16 @@
 #include "structureLib.h"
 
 tContacto* crearContacto() {
+	
     tContacto *nuevoContacto = (tContacto*)malloc(sizeof(tContacto));
     
     if (nuevoContacto == NULL) {
         printf("Error al asignar memoria.\n");
         exit(1);
     }
-	
-	int id = getUltimaId();
-    nuevoContacto->id = id;
+
+    int id = getUltimaId();  
+    nuevoContacto->id = id + 1;  
 
     printf("Nombre: ");
     fgets(nuevoContacto->nombre, sizeof(nuevoContacto->nombre), stdin);
@@ -27,8 +28,9 @@ tContacto* crearContacto() {
     nuevoContacto->apellido[strcspn(nuevoContacto->apellido, "\n")] = 0;
 
     printf("Numero telefonico: ");
-    scanf("%ld", &nuevoContacto->numero);
-    getchar(); 
+    scanf(" %s", nuevoContacto->numero);
+    fflush(stdin);
+
 
     printf("Nota (Opcional): ");
     fgets(nuevoContacto->nota, sizeof(nuevoContacto->nota), stdin);
@@ -42,5 +44,7 @@ tContacto* crearContacto() {
     nuevoContacto->siguiente = NULL;
     return nuevoContacto;
 }
+
+
 
 #endif // LIB_CONTACTOS_H

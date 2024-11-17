@@ -4,6 +4,7 @@
 
 int main() {
 	
+<<<<<<< HEAD
     /*tContacto *lista = cargarLista();  
     tContacto *nuevoContacto = crearContacto();
     nuevoContacto->siguiente = lista;
@@ -20,4 +21,9 @@ int main() {
 	mostrarContactos();
 	
 	return 0;
+=======
+    tContacto *lista = cargarLista();  
+    mostrarContactoEspecifico("3624277088");
+    
+>>>>>>> main
 }

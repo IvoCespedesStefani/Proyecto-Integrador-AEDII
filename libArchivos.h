@@ -13,7 +13,11 @@ void grabarLista(tContacto*);
 tContacto *cargarLista();
 int getUltimaId();
 tContacto getContactoId(int);
+<<<<<<< HEAD
 tContacto* getContactoNum(tString);
+=======
+tContacto getContactoNum(tString);
+>>>>>>> main
 void mostrarContactos();
 
 FILE *abrirArchivoLectura() {
@@ -137,6 +141,7 @@ void mostrarContactos() {
 }
 
 void mostrarContactoEspecifico(tString numero){
+<<<<<<< HEAD
     FILE *archivo = abrirArchivoLectura();
 
     tContacto contacto;
@@ -160,6 +165,28 @@ void mostrarContactoEspecifico(tString numero){
     }
 
     fclose(archivo);  // Asegúrate de cerrar el archivo después de usarlo
+=======
+	FILE *archivo = abrirArchivoLectura();
+	tContacto contacto;
+	int encontrado = 0;
+	
+ 	while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1){
+ 		if(strcmp(contacto.numero, numero) == 0){
+ 			printf("Nombre: %s\n", contacto.nombre);
+ 			printf("Apellido: %s\n", contacto.apellido);
+ 			printf("Numero: %s\n", contacto.numero);
+ 			printf("Nota: %s\n", contacto.nota);
+ 			encontrado = 1;
+		 } else {
+		 	encontrado = 0;
+		 }
+	}
+	
+	if(!encontrado){
+		printf("No se encontro el contacto");
+	}
+	
+>>>>>>> main
 }
 
 int getUltimaId() {
@@ -192,6 +219,7 @@ tContacto getContactoId(int id){
     return contacto;
 }
 
+<<<<<<< HEAD
 tContacto* getContactoNum(tString numero) {
     tContacto* contacto = malloc(sizeof(tContacto)); 
     if (contacto == NULL) {
@@ -209,6 +237,22 @@ tContacto* getContactoNum(tString numero) {
     
     cerrarArchivo(archivo);
     strcpy(contacto->numero, "No se encontro el contacto"); 
+=======
+tContacto getContactoNum(tString numero){
+	
+	tContacto contacto;
+	FILE *archivo = abrirArchivoLectura();
+	
+	while(fread(&contacto, sizeof(tContacto), 1, archivo ) == 1) {
+		if (strcmp(contacto.numero, numero) == 0){
+			cerrarArchivo(archivo);
+			return contacto;
+		}
+	}
+	
+	cerrarArchivo(archivo);
+    strcpy(contacto.numero, "No se encontro el contacto");
+>>>>>>> main
     return contacto;
 }
 

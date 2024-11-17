@@ -28,8 +28,14 @@ tContacto* crearContacto() {
     nuevoContacto->apellido[strcspn(nuevoContacto->apellido, "\n")] = 0;
 
     printf("Numero telefonico: ");
+<<<<<<< HEAD
    	scanf("%s", &nuevoContacto->numero);
    	while (getchar() != '\n'); 
+=======
+    scanf(" %s", nuevoContacto->numero);
+    fflush(stdin);
+
+>>>>>>> main
 
     printf("Nota (Opcional): ");
     fgets(nuevoContacto->nota, sizeof(nuevoContacto->nota), stdin);
@@ -44,6 +50,7 @@ tContacto* crearContacto() {
     return nuevoContacto;
 }
 
+<<<<<<< HEAD
 tContacto* editarContacto(tString num) {
     tContacto* contactoEditar = getContactoNum(num);  // Llamamos a getContactoNum para obtener el puntero
     
@@ -88,6 +95,8 @@ tContacto* editarContacto(tString num) {
     cerrarArchivo(archivo);
     return contactoEditar;  
 }
+=======
+>>>>>>> main
 
 
 #endif // LIB_CONTACTOS_H

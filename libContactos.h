@@ -27,7 +27,7 @@ tContacto* crearContacto() {
     nuevoContacto->apellido[strcspn(nuevoContacto->apellido, "\n")] = 0;
 
     printf("Numero telefonico: ");
-    scanf("%d", &nuevoContacto->numero);
+    scanf("%ld", &nuevoContacto->numero);
     getchar(); 
 
     printf("Nota (Opcional): ");

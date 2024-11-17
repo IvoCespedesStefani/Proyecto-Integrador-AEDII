@@ -3,8 +3,18 @@
 #include "libArchivos.h"
 
 int main() {
-	
-    tContacto *lista = cargarLista();  
-    mostrarContactoEspecifico("3624277088");
     
+    tContacto *lista = cargarLista();  
+    /*tContacto *nuevo = crearContacto();
+    nuevo->siguiente = lista;
+    lista = nuevo;
+    grabarLista(lista);
+    
+    /*mostrarContactos();
+    tContacto *contactoEditar = editarContacto("123");
+    printf("Debug\n\n\n");
+    mostrarContactoEspecifico("123");*/
+    
+    
+    return 0;
 }

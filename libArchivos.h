@@ -13,15 +13,14 @@ void grabarLista(tContacto*);
 tContacto *cargarLista();
 int getUltimaId();
 tContacto getContactoId(int);
-tContacto getContactoNum(tString);
+tContacto* getContactoNum(tString);
 void mostrarContactos();
 
 FILE *abrirArchivoLectura() {
-	
     FILE *archivo = fopen("db.dat", "rb"); 
     
     if (archivo == NULL) { 
-    	printf("Creando base de datos...\n");
+        printf("Creando base de datos...\n");
         archivo = fopen("db.dat", "wb");
         if (archivo != NULL) {
             fclose(archivo);
@@ -34,16 +33,15 @@ FILE *abrirArchivoLectura() {
     return archivo;
 }
 
-FILE *abrirArchivoEscritura(){
-	
-    FILE *archivo = fopen("db.dat", "ab");
+FILE* abrirArchivoEscritura() {
+    FILE* archivo = fopen("db.dat", "r+b");  
     
-    if (archivo == NULL) { 
+    if (archivo == NULL) {
         printf("Creando base de datos...\n");
-        archivo = fopen("db.dat", "wb");
+        archivo = fopen("db.dat", "wb"); 
         if (archivo != NULL) {
             fclose(archivo);
-            archivo = fopen("db.dat", "ab"); 
+            archivo = fopen("db.dat", "r+b");  
         } else {
             perror("Error al crear el archivo");
         }
@@ -52,8 +50,9 @@ FILE *abrirArchivoEscritura(){
     return archivo;
 }
 
-void cerrarArchivo(FILE* archivo){
-	fclose(archivo);
+
+void cerrarArchivo(FILE* archivo) {
+    fclose(archivo);
 }
 
 void grabarLista(tContacto *lista) {
@@ -115,8 +114,8 @@ void mostrarContactos() {
     FILE *archivo = abrirArchivoLectura();
     tContacto contacto;
     int encontrado = 0;
-	
-	printf("\n");
+    
+    printf("\n");
     printf("Lista de contactos:\n");
     printf("====================================\n");
 
@@ -136,27 +135,29 @@ void mostrarContactos() {
     cerrarArchivo(archivo);
 }
 
-void mostrarContactoEspecifico(tString numero){
-	FILE *archivo = abrirArchivoLectura();
-	tContacto contacto;
-	int encontrado = 0;
-	
- 	while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1){
- 		if(strcmp(contacto.numero, numero) == 0){
- 			printf("Nombre: %s\n", contacto.nombre);
- 			printf("Apellido: %s\n", contacto.apellido);
- 			printf("Numero: %s\n", contacto.numero);
- 			printf("Nota: %s\n", contacto.nota);
- 			encontrado = 1;
-		 } else {
-		 	encontrado = 0;
-		 }
-	}
-	
-	if(!encontrado){
-		printf("No se encontro el contacto");
-	}
-	
+void mostrarContactoEspecifico(tString numero) {
+    FILE *archivo = abrirArchivoLectura();
+    tContacto contacto;
+    int encontrado = 0;
+    
+    while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
+        // Comprobar si el número del contacto coincide
+        if (strcmp(contacto.numero, numero) == 0) {
+            printf("Nombre: %s\n", contacto.nombre);
+            printf("Apellido: %s\n", contacto.apellido);
+            printf("Numero: %s\n", contacto.numero);
+            printf("Nota: %s\n", contacto.nota);
+            encontrado = 1;
+            break; // Salir del bucle cuando se encuentra el contacto
+        }
+    }
+    
+    // Verificar si no se encontró el contacto
+    if (!encontrado) {
+        printf("No se encontró el contacto\n");
+    }
+
+    fclose(archivo);  // Asegúrate de cerrar el archivo después de usarlo
 }
 
 int getUltimaId() {
@@ -173,7 +174,7 @@ int getUltimaId() {
     return ultimaId;  
 }
 
-tContacto getContactoId(int id){
+tContacto getContactoId(int id) {
     tContacto contacto;
     FILE *archivo = abrirArchivoLectura();
     
@@ -189,21 +190,31 @@ tContacto getContactoId(int id){
     return contacto;
 }
 
-tContacto getContactoNum(tString numero){
-	
-	tContacto contacto;
-	FILE *archivo = abrirArchivoLectura();
-	
-	while(fread(&contacto, sizeof(tContacto), 1, archivo ) == 1) {
-		if (strcmp(contacto.numero, numero) == 0){
-			cerrarArchivo(archivo);
-			return contacto;
-		}
-	}
-	
-	cerrarArchivo(archivo);
-    strcpy(contacto.numero, "No se encontro el contacto");
-    return contacto;
+tContacto* getContactoNum(tString numero) {
+    tContacto contacto;  
+    FILE *archivo = abrirArchivoLectura();
+    
+    while(fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {  // Leer directamente en la variable local
+        if (strcmp(contacto.numero, numero) == 0){
+            cerrarArchivo(archivo);
+            tContacto* contactoEncontrado = (tContacto*)malloc(sizeof(tContacto));
+            if (contactoEncontrado == NULL) {
+                printf("Error al asignar memoria para el contacto.\n");
+                exit(1);
+            }
+            memcpy(contactoEncontrado, &contacto, sizeof(tContacto));  // Copiamos el contenido de la variable local
+            return contactoEncontrado;  // Devolver una copia del contacto encontrado
+        }
+    }
+    cerrarArchivo(archivo);
+    // Si no se encuentra el contacto, devolvemos un puntero con el numero indicando que no se encontró
+    tContacto* contactoNoEncontrado = (tContacto*)malloc(sizeof(tContacto));
+    if (contactoNoEncontrado == NULL) {
+        printf("Error al asignar memoria para el contacto.\n");
+        exit(1);
+    }
+    strcpy(contactoNoEncontrado->numero, "No se encontro el contacto");
+    return contactoNoEncontrado;
 }
 
 #endif // LIB_ARCHIVOS_H

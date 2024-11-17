@@ -113,12 +113,6 @@ tContacto *cargarLista() {
 
 void mostrarContactos() {
     FILE *archivo = abrirArchivoLectura();
-
-    if (archivo == NULL) {
-        printf("No se pudo abrir el archivo o no existe.\n");
-        return;
-    }
-
     tContacto contacto;
     int encontrado = 0;
 	
@@ -142,6 +136,28 @@ void mostrarContactos() {
     cerrarArchivo(archivo);
 }
 
+void mostrarContactoEspecifico(tString numero){
+	FILE *archivo = abrirArchivoLectura();
+	tContacto contacto;
+	int encontrado = 0;
+	
+ 	while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1){
+ 		if(strcmp(contacto.numero, numero) == 0){
+ 			printf("Nombre: %s\n", contacto.nombre);
+ 			printf("Apellido: %s\n", contacto.apellido);
+ 			printf("Numero: %s\n", contacto.numero);
+ 			printf("Nota: %s\n", contacto.nota);
+ 			encontrado = 1;
+		 } else {
+		 	encontrado = 0;
+		 }
+	}
+	
+	if(!encontrado){
+		printf("No se encontro el contacto");
+	}
+	
+}
 
 int getUltimaId() {
     FILE *archivo = abrirArchivoLectura();

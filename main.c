@@ -5,16 +5,16 @@
 int main() {
     
     tContacto *lista = cargarLista();  
-    /*tContacto *nuevo = crearContacto();
+   	/*tContacto *nuevo = crearContacto();
     nuevo->siguiente = lista;
     lista = nuevo;
-    grabarLista(lista);
+    grabarLista(lista);*/
     
-    /*mostrarContactos();
-    tContacto *contactoEditar = editarContacto("123");
+    eliminarContacto("123");
+    mostrarContactos();
+    /*tContacto *contactoEditar = editarContacto("123");
     printf("Debug\n\n\n");
     mostrarContactoEspecifico("123");*/
-    
     
     return 0;
 }

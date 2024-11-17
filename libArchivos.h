@@ -50,7 +50,6 @@ FILE* abrirArchivoEscritura() {
     return archivo;
 }
 
-
 void cerrarArchivo(FILE* archivo) {
     fclose(archivo);
 }
@@ -148,7 +147,7 @@ void mostrarContactoEspecifico(tString numero) {
             printf("Numero: %s\n", contacto.numero);
             printf("Nota: %s\n", contacto.nota);
             encontrado = 1;
-            break; // Salir del bucle cuando se encuentra el contacto
+            break;
         }
     }
     
@@ -157,7 +156,7 @@ void mostrarContactoEspecifico(tString numero) {
         printf("No se encontró el contacto\n");
     }
 
-    fclose(archivo);  // Asegúrate de cerrar el archivo después de usarlo
+    fclose(archivo);  
 }
 
 int getUltimaId() {

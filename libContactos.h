@@ -28,7 +28,7 @@ tContacto* crearContacto() {
 
     printf("Numero telefonico: ");
     scanf(" %s", nuevoContacto->numero);
-    fflush(stdin);  // Algunas implementaciones podrían requerir esto para limpiar el buffer de entrada.
+    fflush(stdin);  
 
     printf("Nota (Opcional): ");
     fgets(nuevoContacto->nota, sizeof(nuevoContacto->nota), stdin);
@@ -93,6 +93,56 @@ tContacto* editarContacto(tString num) {
     
     cerrarArchivo(archivo);
     return contactoEditar;  
+}
+
+void eliminarContacto(tString *numero) {
+    tContacto *lista = cargarLista();
+    if (lista == NULL) {
+        printf("La lista está vacia o no se pudo cargar.\n");
+        return;
+    }
+
+    tContacto *actual = lista;
+    tContacto *anterior = NULL;
+    int encontrado = 0;
+
+    while (actual != NULL) {
+        if (strcmp(actual->numero, numero) == 0) {
+            encontrado = 1;
+            if (anterior == NULL) {
+                // Eliminar el primer elemento (y unico, si es el caso)
+                lista = actual->siguiente;
+            } else {
+                // Eliminar un elemento en el medio o al final
+                anterior->siguiente = actual->siguiente;
+            }
+            printf("El contacto con numero %s ha sido eliminado.\n", numero);
+            free(actual); // Liberar la memoria del nodo eliminado
+            break;
+        }
+        anterior = actual;
+        actual = actual->siguiente;
+    }
+
+    if (!encontrado) {
+        printf("No se encontró ningún contacto con el número %s.\n", numero);
+    }
+
+    if (lista == NULL) {
+        // Si la lista quedó vacía, se elimina el archivo o se reescribe vacío
+        FILE *archivo = fopen("db.dat", "wb");
+        if (archivo != NULL) {
+            fclose(archivo);
+        }
+    } else {
+        grabarLista(lista);
+    }
+
+    while (lista != NULL) {
+        tContacto *temp = lista;
+        lista = lista->siguiente;
+        free(temp);
+    }
 }
 
 

@@ -4,23 +4,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "libArchivos.h"
 #include "structureLib.h"
 
 extern tContacto *agenda;
 
+tContacto* crearContacto();
+int esNumeroValido(const char*);
+tContacto* editarContacto(tString num);
+void eliminarContacto(const char*);
+
+int esNumeroValido(const char* numero) {
+    for (int i = 0; numero[i] != '\0'; i++) {
+        if (!isdigit(numero[i])) {
+            return 0; 
+        }
+    }
+    return 1; 
+}
 
 tContacto* crearContacto() {
-    tContacto *nuevoContacto = (tContacto*)malloc(sizeof(tContacto));
-    
+    tContacto* nuevoContacto = (tContacto*)malloc(sizeof(tContacto));
+
     if (nuevoContacto == NULL) {
         printf("Error al asignar memoria.\n");
         exit(1);
     }
 
-    int id = getUltimaId();  
-    nuevoContacto->id = id + 1;  
-    
     while (getchar() != '\n');
 
     printf("Nombre: ");
@@ -31,10 +42,15 @@ tContacto* crearContacto() {
     fgets(nuevoContacto->apellido, sizeof(nuevoContacto->apellido), stdin);
     nuevoContacto->apellido[strcspn(nuevoContacto->apellido, "\n")] = 0;
 
-    printf("Numero telefonico: ");
-    while (getchar() != '\n'); 
-    scanf(" %s", nuevoContacto->numero);
-    while (getchar() != '\n'); 
+    do {
+        printf("Numero telefonico: ");
+        fgets(nuevoContacto->numero, sizeof(nuevoContacto->numero), stdin);
+        nuevoContacto->numero[strcspn(nuevoContacto->numero, "\n")] = 0;
+
+        if (!esNumeroValido(nuevoContacto->numero)) {
+            printf("El número ingresado contiene caracteres inválidos. Intenta nuevamente.\n");
+        }
+    } while (!esNumeroValido(nuevoContacto->numero)); 
 
     printf("Nota (Opcional): ");
     fgets(nuevoContacto->nota, sizeof(nuevoContacto->nota), stdin);
@@ -133,5 +149,108 @@ void eliminarContacto(const char *numero) {
 
     grabarLista(agenda); // Guardar la lista actualizada
 }
+
+void liberarLista(tContacto *lista) {
+    tContacto *actual;
+    while (lista != NULL) {
+        actual = lista;
+        lista = lista->siguiente;
+        free(actual);
+    }
+}
+
+tContacto *copiarLista(tContacto *listaOriginal) {
+    if (listaOriginal == NULL) {
+        return NULL;
+    }
+
+    tContacto *copia = NULL, *ultimo = NULL;
+
+    tContacto *actual = listaOriginal;
+    while (actual != NULL) {
+        tContacto *nuevoNodo = (tContacto *)malloc(sizeof(tContacto));
+        if (nuevoNodo == NULL) {
+            perror("No se pudo asignar memoria para la copia.");
+            liberarLista(copia); 
+            return NULL;
+        }
+        *nuevoNodo = *actual;
+        nuevoNodo->siguiente = NULL;
+
+        if (copia == NULL) {
+            copia = nuevoNodo;
+        } else {
+            ultimo->siguiente = nuevoNodo;
+        }
+        ultimo = nuevoNodo;
+
+        actual = actual->siguiente;
+    }
+
+    return copia;
+}
+
+void mostrarContactos(tContacto *lista) {
+    if (lista == NULL) {
+        printf("\nNo hay contactos almacenados.\n");
+        return;
+    }
+
+    tContacto *copiaLista = copiarLista(lista);
+    if (copiaLista == NULL) {
+        printf("\nError al crear la copia de la lista.\n");
+        return;
+    }
+
+    printf("\nLista de contactos:\n");
+    printf("====================================\n");
+
+    tContacto *actual = copiaLista;
+    while (actual != NULL) {
+        printf("Nombre: %s\n", actual->nombre);
+        printf("Apellido: %s\n", actual->apellido);
+        printf("Numero: %s\n", actual->numero);
+        printf("------------------------------------\n");
+
+        actual = actual->siguiente;
+    }
+
+    liberarLista(copiaLista);
+}
+
+void mostrarContactoEspecifico(tContacto *lista, tString numero) {
+    if (lista == NULL) {
+        printf("La lista de contactos está vacía.\n");
+        return;
+    }
+
+    tContacto *copiaLista = copiarLista(lista);
+    if (copiaLista == NULL) {
+        printf("Error al crear la copia de la lista.\n");
+        return;
+    }
+
+    tContacto *actual = copiaLista;
+    int encontrado = 0;
+
+    while (actual != NULL) {
+        if (strcmp(actual->numero, numero) == 0) {
+            printf("Nombre: %s\n", actual->nombre);
+            printf("Apellido: %s\n", actual->apellido);
+            printf("Numero: %s\n", actual->numero);
+            printf("Nota: %s\n", actual->nota);
+            encontrado = 1;
+            break;
+        }
+        actual = actual->siguiente;
+    }
+
+    if (!encontrado) {
+        printf("No se encontró el contacto.\n");
+    }
+
+    liberarLista(copiaLista);
+}
+
 
 #endif // LIB_CONTACTOS_H

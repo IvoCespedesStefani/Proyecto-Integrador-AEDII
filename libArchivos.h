@@ -14,7 +14,6 @@ tContacto *cargarLista();
 int getUltimaId();
 tContacto getContactoId(int);
 tContacto* getContactoNum(tString);
-void mostrarContactos();
 
 FILE *abrirArchivoLectura() {
     FILE *archivo = fopen("db.dat", "rb"); 
@@ -101,54 +100,6 @@ tContacto *cargarLista() {
 
     cerrarArchivo(archivo);
     return lista;
-}
-
-void mostrarContactos() {
-    FILE *archivo = abrirArchivoLectura();
-    tContacto contacto;
-    int encontrado = 0;
-    
-    printf("\n");
-    printf("Lista de contactos:\n");
-    printf("====================================\n");
-
-    while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
-        printf("Nombre: %s\n", contacto.nombre);
-        printf("Apellido: %s\n", contacto.apellido);
-        printf("Numero: %s\n", contacto.numero);
-        printf("------------------------------------\n");
-        encontrado = 1;
-    }
-
-    if (!encontrado) {
-        printf("No hay contactos almacenados.\n");
-    }
-
-    cerrarArchivo(archivo);
-}
-
-void mostrarContactoEspecifico(tString numero) {
-    FILE *archivo = abrirArchivoLectura();
-    tContacto contacto;
-    int encontrado = 0;
-    
-    while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
-        // Comprobar si el número del contacto coincide
-        if (strcmp(contacto.numero, numero) == 0) {
-            printf("Nombre: %s\n", contacto.nombre);
-            printf("Apellido: %s\n", contacto.apellido);
-            printf("Numero: %s\n", contacto.numero);
-            printf("Nota: %s\n", contacto.nota);
-            encontrado = 1;
-            break;
-        }
-    }
-    
-    if (!encontrado) {
-        printf("No se encontró el contacto\n");
-    }
-
-    fclose(archivo);  
 }
 
 int getUltimaId() {

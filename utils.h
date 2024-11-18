@@ -8,8 +8,17 @@
 #include "libArchivos.h"
 
 void generarMenu();
-tContacto *agenda = NULL;
+void limpiarConsola();
 
+void limpiarConsola() {
+    #ifdef _WIN32
+        system("cls"); 
+    #else
+        system("clear"); 
+    #endif
+}
+
+tContacto *agenda = NULL;
 void generarMenu() {
 	SetConsoleOutputCP(CP_UTF8); 
     agenda = cargarLista();  
@@ -74,10 +83,10 @@ void generarMenu() {
                 while (getchar() != '\n'); 
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0'; 
-                mostrarContactoEspecifico(numero);  
+                mostrarContactoEspecifico(agenda, numero);  
                 break;
             case 5:
-                mostrarContactos();
+                mostrarContactos(agenda);
                 break;
             default:
                 printf("El número ingresado está fuera de rango. Por favor ingrese un número entre 0 y 5.\n");
@@ -100,12 +109,6 @@ void generarMenu() {
     } while (seleccion == 'y' || seleccion == 'Y');
 }
 
-void limpiarConsola() {
-    #ifdef _WIN32
-        system("cls"); 
-    #else
-        system("clear"); 
-    #endif
-}
+
 
 #endif // UTILS_H

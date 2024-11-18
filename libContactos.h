@@ -95,7 +95,7 @@ tContacto* editarContacto(tString num) {
     return contactoEditar;  
 }
 
-void eliminarContacto(tString *numero) {
+void eliminarContacto(const char *numero) {
     tContacto *lista = cargarLista();
     if (lista == NULL) {
         printf("La lista está vacia o no se pudo cargar.\n");

@@ -7,6 +7,9 @@
 #include "libArchivos.h"
 #include "structureLib.h"
 
+extern tContacto *agenda;
+
+
 tContacto* crearContacto() {
     tContacto *nuevoContacto = (tContacto*)malloc(sizeof(tContacto));
     
@@ -17,6 +20,8 @@ tContacto* crearContacto() {
 
     int id = getUltimaId();  
     nuevoContacto->id = id + 1;  
+    
+    while (getchar() != '\n');
 
     printf("Nombre: ");
     fgets(nuevoContacto->nombre, sizeof(nuevoContacto->nombre), stdin);
@@ -27,8 +32,9 @@ tContacto* crearContacto() {
     nuevoContacto->apellido[strcspn(nuevoContacto->apellido, "\n")] = 0;
 
     printf("Numero telefonico: ");
+    while (getchar() != '\n'); 
     scanf(" %s", nuevoContacto->numero);
-    fflush(stdin);  
+    while (getchar() != '\n'); 
 
     printf("Nota (Opcional): ");
     fgets(nuevoContacto->nota, sizeof(nuevoContacto->nota), stdin);
@@ -96,28 +102,25 @@ tContacto* editarContacto(tString num) {
 }
 
 void eliminarContacto(const char *numero) {
-    tContacto *lista = cargarLista();
-    if (lista == NULL) {
-        printf("La lista está vacia o no se pudo cargar.\n");
-        return;
-    }
-
-    tContacto *actual = lista;
+    tContacto *actual = agenda;
     tContacto *anterior = NULL;
     int encontrado = 0;
 
+    if (agenda == NULL) {
+        printf("La lista está vacía.\n");
+        return;
+    }
+    
     while (actual != NULL) {
         if (strcmp(actual->numero, numero) == 0) {
             encontrado = 1;
             if (anterior == NULL) {
-                // Eliminar el primer elemento (y unico, si es el caso)
-                lista = actual->siguiente;
+                agenda = actual->siguiente; 
             } else {
-                // Eliminar un elemento en el medio o al final
-                anterior->siguiente = actual->siguiente;
+                anterior->siguiente = actual->siguiente; // Saltar el nodo actual
             }
-            printf("El contacto con numero %s ha sido eliminado.\n", numero);
-            free(actual); // Liberar la memoria del nodo eliminado
+            printf("El contacto con número %s ha sido eliminado.\n", numero);
+            free(actual); // Liberar memoria del nodo eliminado
             break;
         }
         anterior = actual;
@@ -128,22 +131,7 @@ void eliminarContacto(const char *numero) {
         printf("No se encontró ningún contacto con el número %s.\n", numero);
     }
 
-    if (lista == NULL) {
-        // Si la lista quedó vacía, se elimina el archivo o se reescribe vacío
-        FILE *archivo = fopen("db.dat", "wb");
-        if (archivo != NULL) {
-            fclose(archivo);
-        }
-    } else {
-        grabarLista(lista);
-    }
-
-    while (lista != NULL) {
-        tContacto *temp = lista;
-        lista = lista->siguiente;
-        free(temp);
-    }
+    grabarLista(agenda); // Guardar la lista actualizada
 }
-
 
 #endif // LIB_CONTACTOS_H

@@ -55,13 +55,7 @@ void cerrarArchivo(FILE* archivo) {
 }
 
 void grabarLista(tContacto *lista) {
-    if (lista == NULL) {
-        printf("No hay contactos para guardar.\n");
-        return;
-    }
-
-    FILE *archivo = fopen("db.dat", "wb");  
-
+    FILE *archivo = fopen("db.dat", "wb");
     if (archivo == NULL) {
         perror("Error al abrir el archivo para escribir");
         return;
@@ -70,10 +64,10 @@ void grabarLista(tContacto *lista) {
     tContacto *actual = lista;
     while (actual != NULL) {
         fwrite(actual, sizeof(tContacto), 1, archivo); 
-        actual = actual->siguiente;                   
+        actual = actual->siguiente;
     }
 
-    fclose(archivo); 
+    fclose(archivo);
     printf("Contactos guardados exitosamente.\n");
 }
 
@@ -119,7 +113,6 @@ void mostrarContactos() {
     printf("====================================\n");
 
     while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
-        printf("ID: %d\n", contacto.id);
         printf("Nombre: %s\n", contacto.nombre);
         printf("Apellido: %s\n", contacto.apellido);
         printf("Numero: %s\n", contacto.numero);
@@ -151,7 +144,6 @@ void mostrarContactoEspecifico(tString numero) {
         }
     }
     
-    // Verificar si no se encontró el contacto
     if (!encontrado) {
         printf("No se encontró el contacto\n");
     }
@@ -201,7 +193,7 @@ tContacto* getContactoNum(tString numero) {
                 printf("Error al asignar memoria para el contacto.\n");
                 exit(1);
             }
-            memcpy(contactoEncontrado, &contacto, sizeof(tContacto));  // Copiamos el contenido de la variable local
+            memcpy(contactoEncontrado, &contacto, sizeof(tContacto));  
             return contactoEncontrado;  // Devolver una copia del contacto encontrado
         }
     }

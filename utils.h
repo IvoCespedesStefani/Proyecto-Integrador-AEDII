@@ -2,27 +2,31 @@
 #define UTILS_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
 #include "libContactos.h"
 #include "libArchivos.h"
 
 void generarMenu();
-tContacto *agenda;
+tContacto *agenda = NULL;
 
 void generarMenu() {
+	SetConsoleOutputCP(CP_UTF8); 
     agenda = cargarLista();  
     char seleccion;
     int opciones = -1;
     tString numero;  
 
     do {
-        printf("Seleccione una opcion:\n"
+    	limpiarConsola();
+        printf("Seleccione una opción:\n"
                "1: Cargar nuevo contacto\n"
                "2: Editar un contacto\n"
                "3: Eliminar un contacto\n"
-               "4: Ver un contacto especifico\n"
+               "4: Ver un contacto específico\n"
                "5: Ver todos los contactos\n"
                "0: Salir del programa\n"
-               "Su eleccion: ");
+               "Su elección: ");
         if (scanf("%d", &opciones) != 1) {  
             printf("Entrada invalida. Por favor ingrese un numero entre 0 y 5.\n");
             while (getchar() != '\n'); 
@@ -39,12 +43,12 @@ void generarMenu() {
                     tContacto *nuevoContacto = crearContacto();  
                     nuevoContacto->siguiente = agenda;
                     agenda = nuevoContacto;
-                    printf("¿Desea cargar otro contacto?\n"
+                    printf("Desea cargar otro contacto?\n"
                            "1: Sí\n"
                            "2: No\n"
                            "Su elección: ");
                     if (scanf("%d", &seguirGenerando) != 1 || (seguirGenerando != 1 && seguirGenerando != 2)) {
-                        printf("Opción invalida. Terminando la carga de contactos.\n");
+                        printf("Opción inválida. Terminando la carga de contactos.\n");
                         seguirGenerando = 2; 
                     }
                 }
@@ -52,21 +56,21 @@ void generarMenu() {
                 break;
             }
             case 2:
-                printf("Ingrese el numero de telefono del contacto a editar.\nNumero: ");
+                printf("Ingrese el número de teléfono del contacto a editar.\nNúmero: ");
                 while (getchar() != '\n');  
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0';  
                 editarContacto(numero); 
                 break;
             case 3:
-                printf("Ingrese el numero de telefono que desea eliminar.\nNumero: ");
+                printf("Ingrese el número de teléfono que desea eliminar.\nNúmero: ");
                 while (getchar() != '\n');  
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0';  
                 eliminarContacto(numero);  
                 break;
             case 4:
-                printf("Ingrese el numero del contacto que desea ver.\nNumero: ");
+                printf("Ingrese el número del contacto que desea ver.\nNúmero: ");
                 while (getchar() != '\n'); 
                 fgets(numero, sizeof(numero), stdin);
                 numero[strcspn(numero, "\n")] = '\0'; 
@@ -76,19 +80,32 @@ void generarMenu() {
                 mostrarContactos();
                 break;
             default:
-                printf("El numero ingresado está fuera de rango. Por favor ingrese un numero entre 0 y 5.\n");
+                printf("El número ingresado está fuera de rango. Por favor ingrese un número entre 0 y 5.\n");
                 break;
         }
 
         if (opciones != 0) {  
-            printf("¿Desea realizar más operaciones? (y/n): ");
-            while (getchar() != '\n');  
-            scanf(" %c", &seleccion);
-            while (getchar() != '\n');  
+            printf("Desea realizar más operaciones? (y/n): ");
+            do {
+                while (getchar() != '\n'); 
+                seleccion = getchar();
+
+                if (seleccion != 'y' && seleccion != 'Y' && seleccion != 'n' && seleccion != 'N') {
+                    printf("Opción inválida. Por favor ingrese 'y' para sí o 'n' para no: ");
+                }
+            } while (seleccion != 'y' && seleccion != 'Y' && seleccion != 'n' && seleccion != 'N');
         } else {
             seleccion = 'n';
         }
     } while (seleccion == 'y' || seleccion == 'Y');
+}
+
+void limpiarConsola() {
+    #ifdef _WIN32
+        system("cls"); 
+    #else
+        system("clear"); 
+    #endif
 }
 
 #endif // UTILS_H

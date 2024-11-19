@@ -14,6 +14,10 @@ tContacto* crearContacto();
 int esNumeroValido(const char*);
 tContacto* editarContacto(tString num);
 void eliminarContacto(const char*);
+void liberarLista(tContacto*);
+tContacto *copiarLista(tContacto *);
+void mostrarContactos(tContacto *;
+void mostrarContactoEspecifico(tContacto*, tString);
 
 int esNumeroValido(const char* numero) {
     for (int i = 0; numero[i] != '\0'; i++) {
@@ -94,7 +98,7 @@ tContacto* editarContacto(tString num) {
      
     FILE* archivo = abrirArchivoEscritura();
     tContacto contacto;
-    long pos = -1;  // Variable para almacenar la posición en el archivo
+    long pos = -1;  // Almacenar posicion
     
     // Buscamos el contacto y almacenamos la posición
     while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
@@ -133,10 +137,10 @@ void eliminarContacto(const char *numero) {
             if (anterior == NULL) {
                 agenda = actual->siguiente; 
             } else {
-                anterior->siguiente = actual->siguiente; // Saltar el nodo actual
+                anterior->siguiente = actual->siguiente; 
             }
             printf("El contacto con número %s ha sido eliminado.\n", numero);
-            free(actual); // Liberar memoria del nodo eliminado
+            free(actual); 
             break;
         }
         anterior = actual;
@@ -147,7 +151,7 @@ void eliminarContacto(const char *numero) {
         printf("No se encontró ningún contacto con el número %s.\n", numero);
     }
 
-    grabarLista(agenda); // Guardar la lista actualizada
+    grabarLista(agenda); 
 }
 
 void liberarLista(tContacto *lista) {

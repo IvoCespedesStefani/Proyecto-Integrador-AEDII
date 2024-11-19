@@ -136,7 +136,7 @@ tContacto* getContactoNum(tString numero) {
     tContacto contacto;  
     FILE *archivo = abrirArchivoLectura();
     
-    while(fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {  // Leer directamente en la variable local
+    while(fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {  /
         if (strcmp(contacto.numero, numero) == 0){
             cerrarArchivo(archivo);
             tContacto* contactoEncontrado = (tContacto*)malloc(sizeof(tContacto));

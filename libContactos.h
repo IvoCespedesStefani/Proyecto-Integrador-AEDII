@@ -12,11 +12,11 @@ extern tContacto *agenda;
 
 tContacto* crearContacto();
 int esNumeroValido(const char*);
-tContacto* editarContacto(tString num);
+void editarContacto(const char* num);
 void eliminarContacto(const char*);
 void liberarLista(tContacto*);
 tContacto *copiarLista(tContacto *);
-void mostrarContactos(tContacto *;
+void mostrarContactos(tContacto *);
 void mostrarContactoEspecifico(tContacto*, tString);
 
 int esNumeroValido(const char* numero) {
@@ -69,57 +69,72 @@ tContacto* crearContacto() {
     return nuevoContacto;
 }
 
-tContacto* editarContacto(tString num) {
-    tContacto* contactoEditar = getContactoNum(num);  
-    
+void editarContacto(const char* num) {
+    tContacto* contactoEditar = getContactoNum(num);
+
     if (contactoEditar == NULL || strcmp(contactoEditar->numero, "No se encontro el contacto") == 0) {
-        printf("\nNo se encontro el contacto para editar.\n");
-        return NULL;
+        printf("\nNo se encontró el contacto para editar.\n");
+        return;
     }
 
     printf("\nEditando el contacto %s\n\n", contactoEditar->numero);
-    
+
     printf("Nuevo nombre: ");
     fgets(contactoEditar->nombre, sizeof(contactoEditar->nombre), stdin);
-    contactoEditar->nombre[strcspn(contactoEditar->nombre, "\n")] = 0;  
-    
+    contactoEditar->nombre[strcspn(contactoEditar->nombre, "\n")] = 0;
+
     printf("Nuevo apellido: ");
     fgets(contactoEditar->apellido, sizeof(contactoEditar->apellido), stdin);
     contactoEditar->apellido[strcspn(contactoEditar->apellido, "\n")] = 0;
-    
+
     printf("Nueva nota: ");
     fgets(contactoEditar->nota, sizeof(contactoEditar->nota), stdin);
-    contactoEditar->nota[strcspn(contactoEditar->apellido, "\n")] = 0;
-     
+    contactoEditar->nota[strcspn(contactoEditar->nota, "\n")] = 0;
+
     if (strlen(contactoEditar->nota) == 0) {
         strcpy(contactoEditar->nota, "No se proporciono una nota");
-        printf("No se asigno una nota a este contacto\n");
+        printf("No se asignó una nota a este contacto.\n");
     }
-     
+
+    // Actualizar en el archivo
     FILE* archivo = abrirArchivoEscritura();
+    if (archivo == NULL) {
+        printf("Error al abrir el archivo para escritura.\n");
+        return;
+    }
+
     tContacto contacto;
-    long pos = -1;  // Almacenar posicion
-    
-    // Buscamos el contacto y almacenamos la posición
+    long pos = -1; 
+
+    // Buscamos el contacto en el archivo
     while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
-        pos = ftell(archivo) - sizeof(tContacto);  // Guardar la pos actual antes de leer el siguiente contacto
         if (strcmp(contacto.numero, num) == 0) {
-            // Nos movemos a la posición del contacto en el archivo
+            pos = ftell(archivo) - sizeof(tContacto);
             fseek(archivo, pos, SEEK_SET);
-            // Sobrescribimos el contacto editado
             if (fwrite(contactoEditar, sizeof(tContacto), 1, archivo) != 1) {
                 printf("Error al guardar el contacto editado en el archivo.\n");
-                cerrarArchivo(archivo);
-                return NULL;
+            } else {
+                printf("Contacto actualizado exitosamente en el archivo.\n");
             }
-            printf("Contacto actualizado exitosamente.\n");
             break;
         }
     }
-    
+
     cerrarArchivo(archivo);
-    return contactoEditar;  
+
+    tContacto* actual = agenda;
+    while (actual != NULL) {
+        if (strcmp(actual->numero, num) == 0) {
+            strcpy(actual->nombre, contactoEditar->nombre);
+            strcpy(actual->apellido, contactoEditar->apellido);
+            strcpy(actual->nota, contactoEditar->nota);
+            printf("Contacto actualizado exitosamente en la lista en memoria.\n");
+            break;
+        }
+        actual = actual->siguiente;
+    }
 }
+
 
 void eliminarContacto(const char *numero) {
     tContacto *actual = agenda;

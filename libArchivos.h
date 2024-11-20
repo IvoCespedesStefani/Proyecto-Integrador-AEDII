@@ -79,7 +79,16 @@ tContacto *cargarLista() {
 
     tContacto *lista = NULL, *ultimo = NULL, contactoTemp;
 
-    while (fread(&contactoTemp, sizeof(tContacto), 1, archivo) == 1) {
+    while (!feof(archivo)) {  
+        size_t bytesLeidos = fread(&contactoTemp, sizeof(tContacto), 1, archivo);
+        if (bytesLeidos != 1) {
+            if (feof(archivo)) {
+                break;  // Salimos del ciclo si hemos llegado al final del archivo
+            }
+            perror("Error al leer el archivo");
+            break;
+        }
+
         tContacto *nuevoContacto = (tContacto *)malloc(sizeof(tContacto));
         if (nuevoContacto == NULL) {
             perror("No se pudo asignar memoria");
@@ -97,47 +106,25 @@ tContacto *cargarLista() {
         }
         ultimo = nuevoContacto;
     }
-
     cerrarArchivo(archivo);
     return lista;
 }
 
-int getUltimaId() {
-    FILE *archivo = abrirArchivoLectura();
-
-    tContacto contacto;
-    int ultimaId;
-
-    while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
-        ultimaId = contacto.id;  
-    }
-
-    fclose(archivo); 
-    return ultimaId;  
-}
-
-tContacto getContactoId(int id) {
-    tContacto contacto;
-    FILE *archivo = abrirArchivoLectura();
-    
-    while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
-        if (contacto.id == id) {
-            cerrarArchivo(archivo);
-            return contacto;
-        }
-    }
-    
-    cerrarArchivo(archivo);
-    contacto.id = -1; 
-    return contacto;
-}
-
 tContacto* getContactoNum(tString numero) {
-    tContacto contacto;  
+    tContacto contacto;
     FILE *archivo = abrirArchivoLectura();
     
-    while(fread(&contacto, sizeof(tContacto), 1, archivo) == 1) { 
-        if (strcmp(contacto.numero, numero) == 0){
+    while (!feof(archivo)) {  
+        int bytesLeidos = fread(&contacto, sizeof(tContacto), 1, archivo);  
+        if (bytesLeidos != 1) {
+            if (feof(archivo)) {
+                break;  
+            }
+            perror("Error al leer el archivo");
+            break;
+        }
+
+        if (strcmp(contacto.numero, numero) == 0) {
             cerrarArchivo(archivo);
             tContacto* contactoEncontrado = (tContacto*)malloc(sizeof(tContacto));
             if (contactoEncontrado == NULL) {
@@ -148,7 +135,9 @@ tContacto* getContactoNum(tString numero) {
             return contactoEncontrado;  // Devolver una copia del contacto encontrado
         }
     }
+
     cerrarArchivo(archivo);
+    
     // Si no se encuentra el contacto, devolvemos un puntero con el numero indicando que no se encontró
     tContacto* contactoNoEncontrado = (tContacto*)malloc(sizeof(tContacto));
     if (contactoNoEncontrado == NULL) {
@@ -158,5 +147,4 @@ tContacto* getContactoNum(tString numero) {
     strcpy(contactoNoEncontrado->numero, "No se encontro el contacto");
     return contactoNoEncontrado;
 }
-
 #endif // LIB_ARCHIVOS_H

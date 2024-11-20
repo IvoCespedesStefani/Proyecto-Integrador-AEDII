@@ -109,9 +109,6 @@ void editarContacto(const char* num) {
     free(contactoEditar);
 }
 
-
-
-
 void eliminarContacto(const char *numero) {
     tContacto *actual = agenda;
     tContacto *anterior = NULL;

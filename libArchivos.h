@@ -11,8 +11,6 @@ FILE *abrirArchivoEscritura();
 void cerrarArchivo(FILE*);
 void grabarLista(tContacto*);
 tContacto *cargarLista();
-int getUltimaId();
-tContacto getContactoId(int);
 tContacto* getContactoNum(tString);
 
 FILE *abrirArchivoLectura() {
@@ -54,11 +52,7 @@ void cerrarArchivo(FILE* archivo) {
 }
 
 void grabarLista(tContacto *lista) {
-    FILE *archivo = fopen("db.dat", "wb");
-    if (archivo == NULL) {
-        perror("Error al abrir el archivo para escribir");
-        return;
-    }
+    FILE *archivo = abrirArchivoEscritura();
 
     tContacto *actual = lista;
     while (actual != NULL) {
@@ -83,7 +77,7 @@ tContacto *cargarLista() {
         size_t bytesLeidos = fread(&contactoTemp, sizeof(tContacto), 1, archivo);
         if (bytesLeidos != 1) {
             if (feof(archivo)) {
-                break;  // Salimos del ciclo si hemos llegado al final del archivo
+                break;  
             }
             perror("Error al leer el archivo");
             break;
@@ -132,13 +126,12 @@ tContacto* getContactoNum(tString numero) {
                 exit(1);
             }
             memcpy(contactoEncontrado, &contacto, sizeof(tContacto));  
-            return contactoEncontrado;  // Devolver una copia del contacto encontrado
+            return contactoEncontrado; 
         }
     }
 
     cerrarArchivo(archivo);
-    
-    // Si no se encuentra el contacto, devolvemos un puntero con el numero indicando que no se encontró
+
     tContacto* contactoNoEncontrado = (tContacto*)malloc(sizeof(tContacto));
     if (contactoNoEncontrado == NULL) {
         printf("Error al asignar memoria para el contacto.\n");

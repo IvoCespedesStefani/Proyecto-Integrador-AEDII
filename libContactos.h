@@ -93,7 +93,6 @@ void editarContacto(const char* num) {
         printf("No se asignó una nota a este contacto.\n");
     }
 
-    // Actualizar la lista en memoria
     tContacto* actual = agenda;
     while (actual != NULL) {
         if (strcmp(actual->numero, num) == 0) {

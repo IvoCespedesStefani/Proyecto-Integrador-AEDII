@@ -1,6 +1,3 @@
-#ifndef UTILS_H
-#define UTILS_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <windows.h>
@@ -108,7 +105,3 @@ void generarMenu() {
         }
     } while (seleccion == 'y' || seleccion == 'Y');
 }
-
-
-
-#endif // UTILS_H

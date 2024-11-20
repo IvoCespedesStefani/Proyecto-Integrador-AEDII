@@ -1,6 +1,3 @@
-#ifndef LIB_CONTACTOS_H
-#define LIB_CONTACTOS_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +5,7 @@
 #include "libArchivos.h"
 #include "structureLib.h"
 
-extern tContacto *agenda;
+tContacto *agenda;
 
 tContacto* crearContacto();
 int esNumeroValido(const char*);
@@ -96,31 +93,35 @@ void editarContacto(const char* num) {
         printf("No se asignó una nota a este contacto.\n");
     }
 
-    // Actualizar en el archivo
-    FILE* archivo = abrirArchivoEscritura();
+    // Abrir el archivo para lectura y escritura
+    FILE* archivo = abrirArchivoEscritura(); // Abrir en modo lectura y escritura ("rb+")
     if (archivo == NULL) {
         printf("Error al abrir el archivo para escritura.\n");
         return;
     }
 
     tContacto contacto;
-    long pos = -1; 
+    int encontrado = 0;
 
-    // Buscamos el contacto en el archivo
-    while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
-        if (strcmp(contacto.numero, num) == 0) {
-            pos = ftell(archivo) - sizeof(tContacto);
-            fseek(archivo, pos, SEEK_SET);
-            if (fwrite(contactoEditar, sizeof(tContacto), 1, archivo) != 1) {
-                printf("Error al guardar el contacto editado en el archivo.\n");
-            } else {
+    // Lectura adelantada
+    if (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
+        do {
+            if (strcmp(contacto.numero, num) == 0) {
+                // Encontramos el contacto, escribimos el actualizado en su lugar
+                fseek(archivo, -sizeof(tContacto), SEEK_CUR); // Volvemos al inicio del contacto
+                fwrite(contactoEditar, sizeof(tContacto), 1, archivo);
+                encontrado = 1;
                 printf("Contacto actualizado exitosamente en el archivo.\n");
+                break;
             }
-            break;
-        }
+        } while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1);
     }
 
-    cerrarArchivo(archivo);
+    fclose(archivo);
+
+    if (!encontrado) {
+        printf("No se encontró el contacto en el archivo.\n");
+    }
 
     tContacto* actual = agenda;
     while (actual != NULL) {
@@ -134,7 +135,6 @@ void editarContacto(const char* num) {
         actual = actual->siguiente;
     }
 }
-
 
 void eliminarContacto(const char *numero) {
     tContacto *actual = agenda;
@@ -270,6 +270,3 @@ void mostrarContactoEspecifico(tContacto *lista, tString numero) {
 
     liberarLista(copiaLista);
 }
-
-
-#endif // LIB_CONTACTOS_H

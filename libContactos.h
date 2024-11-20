@@ -74,7 +74,7 @@ void editarContacto(const char* num) {
         return;
     }
 
-    printf("\nEditando el contacto %s\n\n", contactoEditar->numero);
+    printf("\nEditando el contacto con el numero telefonico: %s\n\n", contactoEditar->numero);
 
     printf("Nuevo nombre: ");
     fgets(contactoEditar->nombre, sizeof(contactoEditar->nombre), stdin);

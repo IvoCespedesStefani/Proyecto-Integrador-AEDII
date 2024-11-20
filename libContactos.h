@@ -93,36 +93,7 @@ void editarContacto(const char* num) {
         printf("No se asignó una nota a este contacto.\n");
     }
 
-    // Abrir el archivo para lectura y escritura
-    FILE* archivo = abrirArchivoEscritura(); // Abrir en modo lectura y escritura ("rb+")
-    if (archivo == NULL) {
-        printf("Error al abrir el archivo para escritura.\n");
-        return;
-    }
-
-    tContacto contacto;
-    int encontrado = 0;
-
-    // Lectura adelantada
-    if (fread(&contacto, sizeof(tContacto), 1, archivo) == 1) {
-        do {
-            if (strcmp(contacto.numero, num) == 0) {
-                // Encontramos el contacto, escribimos el actualizado en su lugar
-                fseek(archivo, -sizeof(tContacto), SEEK_CUR); // Volvemos al inicio del contacto
-                fwrite(contactoEditar, sizeof(tContacto), 1, archivo);
-                encontrado = 1;
-                printf("Contacto actualizado exitosamente en el archivo.\n");
-                break;
-            }
-        } while (fread(&contacto, sizeof(tContacto), 1, archivo) == 1);
-    }
-
-    fclose(archivo);
-
-    if (!encontrado) {
-        printf("No se encontró el contacto en el archivo.\n");
-    }
-
+    // Actualizar la lista en memoria
     tContacto* actual = agenda;
     while (actual != NULL) {
         if (strcmp(actual->numero, num) == 0) {
@@ -134,7 +105,12 @@ void editarContacto(const char* num) {
         }
         actual = actual->siguiente;
     }
+    grabarLista(agenda); 
+    free(contactoEditar);
 }
+
+
+
 
 void eliminarContacto(const char *numero) {
     tContacto *actual = agenda;
